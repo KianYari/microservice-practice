@@ -23,13 +23,14 @@ func NewUserHandler(
 func (h *UserHandler) Register(c *gin.Context) {
 	type RegisterRequest struct {
 		Email    string `json:"email" validate:"required"`
-		Password string `json:"password " validate:"required"`
+		Password string `json:"password" validate:"required"`
 	}
 	var registerRequest RegisterRequest
 	if err := c.ShouldBindJSON(&registerRequest); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+
 	registerInfo := &dto.RegisterRequest{
 		Email:    registerRequest.Email,
 		Password: registerRequest.Password,
@@ -37,6 +38,7 @@ func (h *UserHandler) Register(c *gin.Context) {
 	err := h.userService.Register(registerInfo)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
 	}
 	c.JSON(http.StatusOK, gin.H{"message": "user registered successfully"})
 }
@@ -57,8 +59,10 @@ func (h *UserHandler) Login(c *gin.Context) {
 	}
 	token, err := h.userService.Login(loginInfo)
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid credentials"})
+		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 		return
 	}
+	c.SetSameSite(http.SameSiteLaxMode)
+	c.SetCookie("token", token, 3600*24*30, "", "", false, true)
 	c.JSON(http.StatusOK, gin.H{"token": token})
 }

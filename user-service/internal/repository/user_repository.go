@@ -7,8 +7,8 @@ import (
 
 type UserRepository interface {
 	CreateUser(user *model.User) error
-	GetUserByID(id string) (*model.User, error)
-	GetUserByEmail(email string) (*model.User, error)
+	GetUserByID(id string) (*model.User, bool)
+	GetUserByEmail(email string) (*model.User, bool)
 }
 
 type userRepository struct {
@@ -22,17 +22,17 @@ func NewUserRepository(db *gorm.DB) UserRepository {
 func (r *userRepository) CreateUser(user *model.User) error {
 	return r.db.Create(user).Error
 }
-func (r *userRepository) GetUserByID(id string) (*model.User, error) {
+func (r *userRepository) GetUserByID(id string) (*model.User, bool) {
 	var user model.User
 	if err := r.db.First(&user, id).Error; err != nil {
-		return nil, err
+		return nil, false
 	}
-	return &user, nil
+	return &user, true
 }
-func (r *userRepository) GetUserByEmail(email string) (*model.User, error) {
+func (r *userRepository) GetUserByEmail(email string) (*model.User, bool) {
 	var user model.User
 	if err := r.db.Where("email = ?", email).First(&user).Error; err != nil {
-		return nil, err
+		return nil, false
 	}
-	return &user, nil
+	return &user, true
 }

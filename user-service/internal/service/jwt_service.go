@@ -24,9 +24,8 @@ func NewJWTService(secretKey string) JWTService {
 
 func (s *jwtService) GenerateToken(email string) (string, error) {
 	claims := jwt.MapClaims{
-		"email": email,
-		"exp":   time.Now().Add(time.Hour * 24 * 30).Unix(),
-		"iat":   time.Now().Unix(),
+		"sub": email,
+		"exp": time.Now().Add(time.Hour * 24 * 30).Unix(),
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
