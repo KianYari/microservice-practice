@@ -3,14 +3,13 @@ package service
 import (
 	"errors"
 
-	"github.com/kianyari/microservice-practice/user-service/internal/dto"
 	"github.com/kianyari/microservice-practice/user-service/internal/model"
 	"github.com/kianyari/microservice-practice/user-service/internal/repository"
 )
 
 type UserService interface {
-	Register(registerInfo *dto.RegisterRequest) error
-	Login(loginInfo *dto.LoginRequest) (string, error)
+	Register(email string, password string) error
+	Login(email string, password string) (string, error)
 }
 
 type userService struct {
@@ -28,23 +27,23 @@ func NewUserService(
 	}
 }
 
-func (s *userService) Register(registerInfo *dto.RegisterRequest) error {
-	_, exist := s.userRepository.GetUserByEmail(registerInfo.Email)
+func (s *userService) Register(email string, password string) error {
+	_, exist := s.userRepository.GetUserByEmail(email)
 	if exist {
 		return errors.New("user already exists")
 	}
 	user := &model.User{
-		Email:    registerInfo.Email,
-		Password: registerInfo.Password,
+		Email:    email,
+		Password: password,
 	}
 	return s.userRepository.CreateUser(user)
 }
-func (s *userService) Login(loginInfo *dto.LoginRequest) (string, error) {
-	user, exist := s.userRepository.GetUserByEmail(loginInfo.Email)
+func (s *userService) Login(email string, password string) (string, error) {
+	user, exist := s.userRepository.GetUserByEmail(email)
 	if !exist {
 		return "", errors.New("user not found")
 	}
-	if user.Password != loginInfo.Password {
+	if user.Password != password {
 		return "", errors.New("invalid password")
 	}
 	token, err := s.jwtService.GenerateToken(user.Email)
