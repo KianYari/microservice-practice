@@ -1,10 +1,11 @@
-module github.com/kianyari/microservice-practice/proto
+module github.com/kianyari/microservice-practice/common
 
 go 1.23.4
 
 require (
+	github.com/joho/godotenv v1.5.1
 	google.golang.org/grpc v1.71.0
-	google.golang.org/protobuf v1.36.6
+	google.golang.org/protobuf v1.36.4
 )
 
 require (

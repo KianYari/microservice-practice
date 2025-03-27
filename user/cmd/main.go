@@ -3,13 +3,14 @@ package main
 import (
 	"fmt"
 	"log"
+	"net"
 
 	handler "github.com/kianyari/microservice-practice/user-service/internal/handler"
 	model "github.com/kianyari/microservice-practice/user-service/internal/model"
 	repository "github.com/kianyari/microservice-practice/user-service/internal/repository"
 	service "github.com/kianyari/microservice-practice/user-service/internal/service"
+	"google.golang.org/grpc"
 
-	"github.com/gin-gonic/gin"
 	"github.com/kianyari/microservice-practice/user-service/config"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -17,6 +18,7 @@ import (
 
 func main() {
 	cfg := config.LoadConfig()
+
 	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable",
 		cfg.DBHost,
 		cfg.DBUser,
@@ -36,11 +38,20 @@ func main() {
 	userRepository := repository.NewUserRepository(db)
 	jwtService := service.NewJWTService(cfg.JWTSecret)
 	userService := service.NewUserService(userRepository, jwtService)
-	userHandler := handler.NewUserHandler(userService)
+	userService.Register("kian", "password")
 
-	router := gin.Default()
-	router.POST("/register", userHandler.Register)
-	router.POST("/login", userHandler.Login)
+	l, err := net.Listen("tcp", ":50051")
+	if err != nil {
+		log.Fatalf("failed to listen: %v", err)
+	}
+	defer l.Close()
 
-	router.Run(fmt.Sprintf(":%s", cfg.ServerPort))
+	grpcServer := grpc.NewServer()
+	handler.NewGRPCHandler(grpcServer)
+
+	log.Println("gRPC server is running on port :50051")
+
+	if err := grpcServer.Serve(l); err != nil {
+		log.Fatalf("failed to serve: %v", err)
+	}
 }
