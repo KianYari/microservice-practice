@@ -38,7 +38,6 @@ func main() {
 	userRepository := repository.NewUserRepository(db)
 	jwtService := service.NewJWTService(cfg.JWTSecret)
 	userService := service.NewUserService(userRepository, jwtService)
-	userService.Register("kian", "password")
 
 	l, err := net.Listen("tcp", ":50051")
 	if err != nil {
@@ -47,7 +46,7 @@ func main() {
 	defer l.Close()
 
 	grpcServer := grpc.NewServer()
-	handler.NewGRPCHandler(grpcServer)
+	handler.NewGRPCHandler(grpcServer, userService)
 
 	log.Println("gRPC server is running on port :50051")
 
