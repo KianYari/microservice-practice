@@ -31,13 +31,13 @@ func main() {
 	taskClient := pb.NewTaskServiceClient(taskConn)
 	jwtClient := pb.NewJWTServiceClient(userConn)
 
-	gineEngine := gin.Default()
+	ginEngine := gin.Default()
 
 	userHandler := handler.NewUserHandler(userClient)
 	taskHandler := handler.NewTaskHandler(taskClient, jwtClient)
 
-	userHandler.RegisterRoutes(gineEngine)
-	taskHandler.RegisterRoutes(gineEngine)
+	userHandler.RegisterRoutes(ginEngine)
+	taskHandler.RegisterRoutes(ginEngine)
 
-	gineEngine.Run(":8080")
+	ginEngine.Run(":8080")
 }
