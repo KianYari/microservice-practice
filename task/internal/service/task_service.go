@@ -13,6 +13,7 @@ type TaskService interface {
 	CreateTask(createTaskRequest dto.CreateTaskRequest) error
 	GetTasks(ownerID uint) (dto.TaskList, error)
 	CompleteTask(completeTaskRequest dto.CompleteTaskRequest) error
+	DeleteTask(deleteTaskRequest dto.DeleteTaskRequest) error
 }
 
 type taskService struct {
@@ -93,6 +94,27 @@ func (taskService *taskService) CompleteTask(completeTaskRequest dto.CompleteTas
 	err := taskService.taskRepository.UpdateTask(task)
 	if err != nil {
 		return errors.New("failed to update task")
+	}
+	return nil
+}
+
+func (taskService *taskService) DeleteTask(deleteTaskRequest dto.DeleteTaskRequest) error {
+	user, exist := taskService.userClient.GetUserByID(context.Background(), &pb.GetUserByIdRequest{
+		Id: int32(deleteTaskRequest.OwnerID),
+	})
+	if exist != nil {
+		return errors.New("user not found")
+	}
+	task, exist := taskService.taskRepository.GetTaskByID(deleteTaskRequest.TaskID)
+	if exist != nil {
+		return errors.New("task not found")
+	}
+	if task.OwnerID != uint(user.Id) {
+		return errors.New("task does not belong to user")
+	}
+	err := taskService.taskRepository.DeleteTask(task.ID)
+	if err != nil {
+		return errors.New("failed to delete task")
 	}
 	return nil
 }

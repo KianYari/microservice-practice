@@ -394,6 +394,102 @@ func (x *CompleteTaskResponse) GetMessage() string {
 	return ""
 }
 
+type DeleteTaskRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            int32                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	OwnerId       int32                  `protobuf:"varint,2,opt,name=owner_id,json=ownerId,proto3" json:"owner_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeleteTaskRequest) Reset() {
+	*x = DeleteTaskRequest{}
+	mi := &file_task_proto_msgTypes[7]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeleteTaskRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteTaskRequest) ProtoMessage() {}
+
+func (x *DeleteTaskRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_task_proto_msgTypes[7]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteTaskRequest.ProtoReflect.Descriptor instead.
+func (*DeleteTaskRequest) Descriptor() ([]byte, []int) {
+	return file_task_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *DeleteTaskRequest) GetId() int32 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
+func (x *DeleteTaskRequest) GetOwnerId() int32 {
+	if x != nil {
+		return x.OwnerId
+	}
+	return 0
+}
+
+type DeleteTaskResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Message       string                 `protobuf:"bytes,1,opt,name=message,proto3" json:"message,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeleteTaskResponse) Reset() {
+	*x = DeleteTaskResponse{}
+	mi := &file_task_proto_msgTypes[8]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeleteTaskResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteTaskResponse) ProtoMessage() {}
+
+func (x *DeleteTaskResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_task_proto_msgTypes[8]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteTaskResponse.ProtoReflect.Descriptor instead.
+func (*DeleteTaskResponse) Descriptor() ([]byte, []int) {
+	return file_task_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *DeleteTaskResponse) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
 var File_task_proto protoreflect.FileDescriptor
 
 const file_task_proto_rawDesc = "" +
@@ -421,12 +517,19 @@ const file_task_proto_rawDesc = "" +
 	"\x02id\x18\x01 \x01(\x05R\x02id\x12\x19\n" +
 	"\bowner_id\x18\x02 \x01(\x05R\aownerId\"0\n" +
 	"\x14CompleteTaskResponse\x12\x18\n" +
-	"\amessage\x18\x01 \x01(\tR\amessage2\xd0\x01\n" +
+	"\amessage\x18\x01 \x01(\tR\amessage\">\n" +
+	"\x11DeleteTaskRequest\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\x05R\x02id\x12\x19\n" +
+	"\bowner_id\x18\x02 \x01(\x05R\aownerId\".\n" +
+	"\x12DeleteTaskResponse\x12\x18\n" +
+	"\amessage\x18\x01 \x01(\tR\amessage2\x91\x02\n" +
 	"\vTaskService\x12?\n" +
 	"\n" +
 	"CreateTask\x12\x16.api.CreateTaskRequest\x1a\x17.api.CreateTaskResponse\"\x00\x129\n" +
 	"\bGetTasks\x12\x14.api.GetTasksRequest\x1a\x15.api.GetTasksResponse\"\x00\x12E\n" +
-	"\fCompleteTask\x12\x18.api.CompleteTaskRequest\x1a\x19.api.CompleteTaskResponse\"\x00B6Z4github.com/kianyari/microservice-practice/common/apib\x06proto3"
+	"\fCompleteTask\x12\x18.api.CompleteTaskRequest\x1a\x19.api.CompleteTaskResponse\"\x00\x12?\n" +
+	"\n" +
+	"DeleteTask\x12\x16.api.DeleteTaskRequest\x1a\x17.api.DeleteTaskResponse\"\x00B6Z4github.com/kianyari/microservice-practice/common/apib\x06proto3"
 
 var (
 	file_task_proto_rawDescOnce sync.Once
@@ -440,7 +543,7 @@ func file_task_proto_rawDescGZIP() []byte {
 	return file_task_proto_rawDescData
 }
 
-var file_task_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
+var file_task_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
 var file_task_proto_goTypes = []any{
 	(*CreateTaskRequest)(nil),     // 0: api.CreateTaskRequest
 	(*CreateTaskResponse)(nil),    // 1: api.CreateTaskResponse
@@ -449,20 +552,24 @@ var file_task_proto_goTypes = []any{
 	(*Task)(nil),                  // 4: api.Task
 	(*CompleteTaskRequest)(nil),   // 5: api.CompleteTaskRequest
 	(*CompleteTaskResponse)(nil),  // 6: api.CompleteTaskResponse
-	(*timestamppb.Timestamp)(nil), // 7: google.protobuf.Timestamp
+	(*DeleteTaskRequest)(nil),     // 7: api.DeleteTaskRequest
+	(*DeleteTaskResponse)(nil),    // 8: api.DeleteTaskResponse
+	(*timestamppb.Timestamp)(nil), // 9: google.protobuf.Timestamp
 }
 var file_task_proto_depIdxs = []int32{
-	7, // 0: api.CreateTaskRequest.deadline:type_name -> google.protobuf.Timestamp
+	9, // 0: api.CreateTaskRequest.deadline:type_name -> google.protobuf.Timestamp
 	4, // 1: api.GetTasksResponse.tasks:type_name -> api.Task
-	7, // 2: api.Task.deadline:type_name -> google.protobuf.Timestamp
+	9, // 2: api.Task.deadline:type_name -> google.protobuf.Timestamp
 	0, // 3: api.TaskService.CreateTask:input_type -> api.CreateTaskRequest
 	2, // 4: api.TaskService.GetTasks:input_type -> api.GetTasksRequest
 	5, // 5: api.TaskService.CompleteTask:input_type -> api.CompleteTaskRequest
-	1, // 6: api.TaskService.CreateTask:output_type -> api.CreateTaskResponse
-	3, // 7: api.TaskService.GetTasks:output_type -> api.GetTasksResponse
-	6, // 8: api.TaskService.CompleteTask:output_type -> api.CompleteTaskResponse
-	6, // [6:9] is the sub-list for method output_type
-	3, // [3:6] is the sub-list for method input_type
+	7, // 6: api.TaskService.DeleteTask:input_type -> api.DeleteTaskRequest
+	1, // 7: api.TaskService.CreateTask:output_type -> api.CreateTaskResponse
+	3, // 8: api.TaskService.GetTasks:output_type -> api.GetTasksResponse
+	6, // 9: api.TaskService.CompleteTask:output_type -> api.CompleteTaskResponse
+	8, // 10: api.TaskService.DeleteTask:output_type -> api.DeleteTaskResponse
+	7, // [7:11] is the sub-list for method output_type
+	3, // [3:7] is the sub-list for method input_type
 	3, // [3:3] is the sub-list for extension type_name
 	3, // [3:3] is the sub-list for extension extendee
 	0, // [0:3] is the sub-list for field type_name
@@ -479,7 +586,7 @@ func file_task_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_task_proto_rawDesc), len(file_task_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   7,
+			NumMessages:   9,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

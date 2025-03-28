@@ -8,6 +8,7 @@ service TaskService {
   rpc CreateTask (CreateTaskRequest) returns (CreateTaskResponse) {}
   rpc GetTasks (GetTasksRequest) returns (GetTasksResponse) {}
   rpc CompleteTask (CompleteTaskRequest) returns (CompleteTaskResponse) {}
+  rpc DeleteTask (DeleteTaskRequest) returns (DeleteTaskResponse) {}
 }
 
 message CreateTaskRequest {
@@ -43,5 +44,13 @@ message CompleteTaskRequest {
 }
 
 message CompleteTaskResponse {
+    string message = 1;
+}
+
+message DeleteTaskRequest {
+    int32 id = 1;
+    int32 owner_id = 2;
+}
+message DeleteTaskResponse {
     string message = 1;
 }

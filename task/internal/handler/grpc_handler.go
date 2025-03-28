@@ -71,3 +71,16 @@ func (h *grpcHandler) CompleteTask(ctx context.Context, req *pb.CompleteTaskRequ
 	}
 	return &pb.CompleteTaskResponse{Message: "task completed successfully"}, nil
 }
+
+func (h *grpcHandler) DeleteTask(ctx context.Context, req *pb.DeleteTaskRequest) (*pb.DeleteTaskResponse, error) {
+	deleteTaskRequest := dto.DeleteTaskRequest{
+		TaskID:  uint(req.Id),
+		OwnerID: uint(req.OwnerId),
+	}
+
+	err := h.taskService.DeleteTask(deleteTaskRequest)
+	if err != nil {
+		return &pb.DeleteTaskResponse{Message: err.Error()}, err
+	}
+	return &pb.DeleteTaskResponse{Message: "task deleted successfully"}, nil
+}

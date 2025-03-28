@@ -13,3 +13,8 @@ type CompleteTaskRequest struct {
 	TaskID  uint
 	OwnerID uint
 }
+
+type DeleteTaskRequest struct {
+	TaskID  uint
+	OwnerID uint
+}

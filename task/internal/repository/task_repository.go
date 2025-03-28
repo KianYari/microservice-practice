@@ -11,6 +11,7 @@ type TaskRepository interface {
 	GetTasks(ownerID uint) ([]*model.Task, error)
 	UpdateTask(task *model.Task) error
 	GetTaskByID(taskID uint) (*model.Task, error)
+	DeleteTask(taskID uint) error
 }
 
 type taskRepository struct {
@@ -59,4 +60,11 @@ func (r *taskRepository) GetTaskByID(taskID uint) (*model.Task, error) {
 		return nil, err
 	}
 	return &task, nil
+}
+
+func (r *taskRepository) DeleteTask(taskID uint) error {
+	if err := r.db.Delete(&model.Task{}, taskID).Error; err != nil {
+		return err
+	}
+	return nil
 }

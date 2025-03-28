@@ -29,6 +29,7 @@ func (h *TaskHandler) RegisterRoutes(ginEngine *gin.Engine) {
 		taskGroup.POST("/create", h.CreateTask)
 		taskGroup.GET("/get-list", h.GetTasks)
 		taskGroup.POST("/complete", h.CompleteTask)
+		taskGroup.DELETE("/delete", h.DeleteTask)
 
 	}
 }
@@ -168,5 +169,40 @@ func (h *TaskHandler) CompleteTask(c *gin.Context) {
 		return
 	}
 
+	c.JSON(200, res)
+}
+
+func (h *TaskHandler) DeleteTask(c *gin.Context) {
+	var req struct {
+		TaskID int32 `json:"task_id" validate:"required"`
+	}
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+	authHeader := c.GetHeader("Authorization")
+	if authHeader == "" {
+		c.JSON(401, gin.H{"error": "Authorization header is required"})
+		return
+	}
+	token := authHeader[len("Bearer "):]
+	validateTokenRequest := &pb.ValidateTokenRequest{
+		Token: token,
+	}
+	response, err := h.jwtService.ValidateToken(c, validateTokenRequest)
+	if err != nil {
+		c.JSON(401, gin.H{"error": "Invalid token"})
+		return
+	}
+	ownerID := response.Id
+	protoReq := &pb.DeleteTaskRequest{
+		Id:      req.TaskID,
+		OwnerId: ownerID,
+	}
+	res, err := h.taskClient.DeleteTask(c, protoReq)
+	if err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
 	c.JSON(200, res)
 }
