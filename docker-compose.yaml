@@ -20,5 +20,3 @@ services:
       - ${TASKDB_PORT}:5432
     volumes:
       - ./db_data/task:/var/lib/postgresql/data
-volumes:
-  postgres_data:
