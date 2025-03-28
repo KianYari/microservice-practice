@@ -8,7 +8,7 @@ services:
     ports:
       - ${USERDB_PORT}:5432
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - ./db_data/user:/var/lib/postgresql/data
 
   taskDB:
     image: postgres:latest
@@ -19,6 +19,6 @@ services:
     ports:
       - ${TASKDB_PORT}:5432
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - ./db_data/task:/var/lib/postgresql/data
 volumes:
   postgres_data:

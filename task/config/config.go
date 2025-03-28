@@ -18,7 +18,7 @@ type Config struct {
 }
 
 func LoadConfig() *Config {
-	err := godotenv.Load("/Users/kian/Desktop/CE/Projects/To-Do List/user/config/.env")
+	err := godotenv.Load("./config/.env")
 	if err != nil {
 		log.Fatal("Error loading .env file")
 	}

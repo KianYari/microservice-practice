@@ -36,12 +36,12 @@ func (taskService *taskService) CreateTask(createTaskRequest dto.CreateTaskReque
 		Id: int32(createTaskRequest.OwnerID),
 	}
 	ctx := context.Background()
-	_, exist := taskService.userClient.GetUserByID(ctx, getUserByIdRequest)
-	if exist != nil {
+	_, err := taskService.userClient.GetUserByID(ctx, getUserByIdRequest)
+	if err != nil {
 		return errors.New("user not found")
 	}
 
-	err := taskService.taskRepository.CreateTask(createTaskRequest)
+	err = taskService.taskRepository.CreateTask(createTaskRequest)
 
 	if err != nil {
 		return errors.New("failed to create task")
@@ -54,8 +54,8 @@ func (taskService *taskService) GetTasks(ownerID uint) (dto.TaskList, error) {
 	getUserByIdRequest := &pb.GetUserByIdRequest{
 		Id: int32(ownerID),
 	}
-	_, exist := taskService.userClient.GetUserByID(ctx, getUserByIdRequest)
-	if exist != nil {
+	_, err := taskService.userClient.GetUserByID(ctx, getUserByIdRequest)
+	if err != nil {
 		return dto.TaskList{}, errors.New("user not found")
 	}
 
@@ -77,10 +77,10 @@ func (taskService *taskService) GetTasks(ownerID uint) (dto.TaskList, error) {
 }
 
 func (taskService *taskService) CompleteTask(completeTaskRequest dto.CompleteTaskRequest) error {
-	user, exist := taskService.userClient.GetUserByID(context.Background(), &pb.GetUserByIdRequest{
+	user, err := taskService.userClient.GetUserByID(context.Background(), &pb.GetUserByIdRequest{
 		Id: int32(completeTaskRequest.OwnerID),
 	})
-	if exist != nil {
+	if err != nil {
 		return errors.New("user not found")
 	}
 	task, exist := taskService.taskRepository.GetTaskByID(completeTaskRequest.TaskID)
@@ -91,7 +91,7 @@ func (taskService *taskService) CompleteTask(completeTaskRequest dto.CompleteTas
 		return errors.New("task does not belong to user")
 	}
 	task.Status = "completed"
-	err := taskService.taskRepository.UpdateTask(task)
+	err = taskService.taskRepository.UpdateTask(task)
 	if err != nil {
 		return errors.New("failed to update task")
 	}
@@ -99,10 +99,10 @@ func (taskService *taskService) CompleteTask(completeTaskRequest dto.CompleteTas
 }
 
 func (taskService *taskService) DeleteTask(deleteTaskRequest dto.DeleteTaskRequest) error {
-	user, exist := taskService.userClient.GetUserByID(context.Background(), &pb.GetUserByIdRequest{
+	user, err := taskService.userClient.GetUserByID(context.Background(), &pb.GetUserByIdRequest{
 		Id: int32(deleteTaskRequest.OwnerID),
 	})
-	if exist != nil {
+	if err != nil {
 		return errors.New("user not found")
 	}
 	task, exist := taskService.taskRepository.GetTaskByID(deleteTaskRequest.TaskID)
@@ -112,7 +112,7 @@ func (taskService *taskService) DeleteTask(deleteTaskRequest dto.DeleteTaskReque
 	if task.OwnerID != uint(user.Id) {
 		return errors.New("task does not belong to user")
 	}
-	err := taskService.taskRepository.DeleteTask(task.ID)
+	err = taskService.taskRepository.DeleteTask(task.ID)
 	if err != nil {
 		return errors.New("failed to delete task")
 	}
