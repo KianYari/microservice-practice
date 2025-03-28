@@ -8,8 +8,8 @@ import (
 )
 
 type JWTService interface {
-	GenerateToken(email string) (string, error)
-	ValidateToken(token string) (string, error)
+	GenerateToken(id uint) (string, error)
+	ValidateToken(token string) (uint, error)
 }
 
 type jwtService struct {
@@ -22,9 +22,9 @@ func NewJWTService(secretKey string) JWTService {
 	}
 }
 
-func (s *jwtService) GenerateToken(email string) (string, error) {
+func (s *jwtService) GenerateToken(id uint) (string, error) {
 	claims := jwt.MapClaims{
-		"sub": email,
+		"sub": id,
 		"exp": time.Now().Add(time.Hour * 24 * 30).Unix(),
 	}
 
@@ -37,7 +37,7 @@ func (s *jwtService) GenerateToken(email string) (string, error) {
 	return signedToken, nil
 }
 
-func (s *jwtService) ValidateToken(tokenString string) (string, error) {
+func (s *jwtService) ValidateToken(tokenString string) (uint, error) {
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, errors.New("unexpected signing method")
@@ -45,14 +45,14 @@ func (s *jwtService) ValidateToken(tokenString string) (string, error) {
 		return []byte(s.secretKey), nil
 	})
 	if err != nil {
-		return "", err
+		return 0, err
 	}
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-		email, ok := claims["email"].(string)
+		id, ok := claims["sub"].(float64)
 		if !ok {
-			return "", errors.New("invalid token claims")
+			return 0, errors.New("invalid token claims")
 		}
-		return email, nil
+		return uint(id), nil
 	}
-	return "", errors.New("invalid token")
+	return 0, errors.New("invalid token")
 }

@@ -11,21 +11,33 @@ import (
 )
 
 func main() {
-	conn, err := grpc.NewClient("localhost:50051",
+	userConn, err := grpc.NewClient("localhost:50051",
 		grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
 	}
-	defer conn.Close()
-	log.Println("Connected to gRPC server on port :50051")
+	defer userConn.Close()
+	log.Println("Connected to user gRPC server on port :50051")
 
-	userClient := pb.NewUserServiceClient(conn)
+	taskConn, err := grpc.NewClient("localhost:50052",
+		grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		log.Fatalf("did not connect: %v", err)
+	}
+	defer taskConn.Close()
+	log.Println("Connected to task gRPC server on port :50052")
+
+	userClient := pb.NewUserServiceClient(userConn)
+	taskClient := pb.NewTaskServiceClient(taskConn)
+	jwtClient := pb.NewJWTServiceClient(userConn)
 
 	gineEngine := gin.Default()
 
 	userHandler := handler.NewUserHandler(userClient)
+	taskHandler := handler.NewTaskHandler(taskClient, jwtClient)
 
 	userHandler.RegisterRoutes(gineEngine)
+	taskHandler.RegisterRoutes(gineEngine)
 
 	gineEngine.Run(":8080")
 }

@@ -5,6 +5,7 @@ package api;
 service UserService {
   rpc Register (RegisterRequest) returns (RegisterResponse) {}
   rpc Login (LoginRequest) returns (LoginResponse) {}
+  rpc GetUserByID(GetUserByIdRequest) returns (GetUserByIdResponse) {}
 }
 
 message RegisterRequest {
@@ -20,4 +21,11 @@ message LoginRequest {
 }
 message LoginResponse {
   string Token = 1;
+}
+message GetUserByIdRequest {
+  int32 id = 1;
+}
+message GetUserByIdResponse {
+  int32 id = 1;
+  string email = 2;
 }

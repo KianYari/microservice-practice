@@ -46,7 +46,7 @@ func main() {
 	defer l.Close()
 
 	grpcServer := grpc.NewServer()
-	handler.NewGRPCHandler(grpcServer, userService)
+	handler.NewGRPCHandler(grpcServer, userService, jwtService)
 
 	log.Println("gRPC server is running on port :50051")
 
