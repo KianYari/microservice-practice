@@ -36,8 +36,8 @@ func (h *TaskHandler) RegisterRoutes(ginEngine *gin.Engine) {
 
 func (h *TaskHandler) CreateTask(c *gin.Context) {
 	var req struct {
-		Title    string `json:"title"`
-		Deadline string `json:"deadline"`
+		Title    string `json:"title" validate:"required"`
+		Deadline string `json:"deadline" validate:"required"`
 	}
 
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -134,7 +134,7 @@ func (h *TaskHandler) GetTasks(c *gin.Context) {
 
 func (h *TaskHandler) CompleteTask(c *gin.Context) {
 	var req struct {
-		TaskId int32 `json:"task_id"`
+		TaskId int32 `json:"task_id" validate:"required"`
 	}
 
 	if err := c.ShouldBindJSON(&req); err != nil {
