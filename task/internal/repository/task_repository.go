@@ -12,6 +12,8 @@ type TaskRepository interface {
 	UpdateTask(task *model.Task) error
 	GetTaskByID(taskID uint) (*model.Task, error)
 	DeleteTask(taskID uint) error
+	GetUserTodayTasks(ownerID uint) ([]*model.Task, error)
+	GetTodayTasks() ([]*model.Task, error)
 }
 
 type taskRepository struct {
@@ -67,4 +69,20 @@ func (r *taskRepository) DeleteTask(taskID uint) error {
 		return err
 	}
 	return nil
+}
+
+func (r *taskRepository) GetUserTodayTasks(ownerID uint) ([]*model.Task, error) {
+	var tasks []*model.Task
+	if err := r.db.Where("owner_id = ? AND deadline = CURRENT_DATE", ownerID).Find(&tasks).Error; err != nil {
+		return nil, err
+	}
+	return tasks, nil
+}
+
+func (r *taskRepository) GetTodayTasks() ([]*model.Task, error) {
+	var tasks []*model.Task
+	if err := r.db.Where("deadline = CURRENT_DATE").Find(&tasks).Error; err != nil {
+		return nil, err
+	}
+	return tasks, nil
 }

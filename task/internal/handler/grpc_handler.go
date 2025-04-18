@@ -12,12 +12,12 @@ import (
 
 type grpcHandler struct {
 	pb.UnimplementedTaskServiceServer
-	taskService service.TaskService
+	taskService service.TaskServiceInterface
 }
 
 func NewGRPCHandler(
 	grpcServer *grpc.Server,
-	taskService service.TaskService,
+	taskService service.TaskServiceInterface,
 ) {
 	handler := &grpcHandler{
 		taskService: taskService,
