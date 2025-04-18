@@ -11,6 +11,7 @@ import (
 	model "github.com/kianyari/microservice-practice/task-service/internal/model"
 	repository "github.com/kianyari/microservice-practice/task-service/internal/repository"
 	service "github.com/kianyari/microservice-practice/task-service/internal/service"
+	"github.com/streadway/amqp"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"gorm.io/driver/postgres"
@@ -47,13 +48,28 @@ func main() {
 	}
 	defer userConn.Close()
 
+	rabbitMQURL := fmt.Sprintf("amqp://%s:%s@%s:%s/",
+		cfg.RabbitMQUser,
+		cfg.RabbitMQPassword,
+		cfg.RabbitMQHost,
+		cfg.RabbitMQPort,
+	)
+	rabbitMQConn, err := amqp.Dial(rabbitMQURL)
+	if err != nil {
+		log.Fatalf("failed to connect to RabbitMQ: %v", err)
+	}
+	defer rabbitMQConn.Close()
+
 	userClient := pb.NewUserServiceClient(userConn)
 
 	taskRepository := repository.NewTaskRepository(db)
-	taskService := service.NewTaskService(userClient, taskRepository)
+	taskService := service.NewTaskService(userClient, taskRepository, rabbitMQConn)
+
+	taskService.StartDeadlineChecker()
 
 	grpcServer := grpc.NewServer()
-	handler.NewGRPCHandler(grpcServer, taskService)
+	var serviceInterface service.TaskServiceInterface = taskService
+	handler.NewGRPCHandler(grpcServer, serviceInterface)
 
 	log.Println("gRPC server is running on port :50052")
 
