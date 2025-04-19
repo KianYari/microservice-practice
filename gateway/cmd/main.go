@@ -11,7 +11,7 @@ import (
 )
 
 func main() {
-	userConn, err := grpc.NewClient("localhost:50051",
+	userConn, err := grpc.NewClient("user_service:50051",
 		grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
@@ -19,7 +19,7 @@ func main() {
 	defer userConn.Close()
 	log.Println("Connected to user gRPC server on port :50051")
 
-	taskConn, err := grpc.NewClient("localhost:50052",
+	taskConn, err := grpc.NewClient("task_service:50052",
 		grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)

@@ -1,5 +1,47 @@
 services:
+  gateway:
+    container_name: gateway
+    build:
+      context: .
+      dockerfile: ./gateway/Dockerfile
+    ports:
+      - 8000:8080
+    restart: unless-stopped
+  user_service:
+    container_name: user_service
+    build:
+      context: .
+      dockerfile: ./user/Dockerfile
+    ports:
+      - 50051:50051
+    env_file:
+      - ./user/config/.env
+    restart: unless-stopped
+
+  task_service:
+    container_name: task_service
+    build:
+      context: .
+      dockerfile: ./task/Dockerfile
+    ports:
+      - 50052:50052
+    env_file:
+      - ./task/config/.env
+    restart: unless-stopped
+
+  notification_service:
+    container_name: notification_service
+    build:
+      context: .
+      dockerfile: ./notification/Dockerfile
+    ports:
+      - 50053:50053
+    env_file:
+      - ./notification/config/.env
+    restart: unless-stopped
+
   userDB:
+    container_name: userDB
     image: postgres:latest
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
@@ -11,6 +53,7 @@ services:
       - ./db_data/user:/var/lib/postgresql/data
 
   taskDB:
+    container_name: taskDB
     image: postgres:latest
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
@@ -22,6 +65,7 @@ services:
       - ./db_data/task:/var/lib/postgresql/data
 
   rabbitmq:
+    container_name: rabbitmq
     image: rabbitmq:3-management
     environment:
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
