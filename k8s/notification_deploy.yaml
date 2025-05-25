@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notification
+  labels:
+    app: notification
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: notification
+  template:
+    metadata:
+      labels:
+        app: notification
+    spec:
+      imagePullSecrets:
+        - name: github-registry
+      containers:
+        - name: notification
+          image: ghcr.io/kianyari/to-dolist-notification_service:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 50053
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 200m
+              memory: 256Mi
+          env:
+            - name: RABBITMQ_HOST
+              value: rabbitmq
+            - name: RABBITMQ_PORT
+              value: "5672"
+            - name: RABBITMQ_USER
+              value: guest
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: notification
+  labels:
+    app: notification
+spec:
+  selector:
+    app: notification
+  ports:
+    - protocol: TCP
+      port: 50053
+      targetPort: 50053
+  type: ClusterIP

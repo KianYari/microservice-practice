@@ -123,13 +123,11 @@ func main() {
 	go func() {
 		for msg := range msgs {
 			log.Printf("Received a message: %s", msg.Body)
-			// Here you can add code to handle the notification, e.g., send an email or push notification
 		}
 	}()
 	go func() {
 		for cmsg := range cmsgs {
 			log.Printf("Received a message: %s", cmsg.Body)
-			// Here you can add code to handle the notification, e.g., send an email or push notification
 		}
 	}()
 	log.Println("Waiting for messages. To exit press CTRL+C")

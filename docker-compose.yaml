@@ -1,5 +1,6 @@
 services:
   gateway:
+    image: ghcr.io/kianyari/to-dolist-gateway:latest
     container_name: gateway
     build:
       context: .
@@ -7,8 +8,12 @@ services:
     ports:
       - 8000:8080
     restart: unless-stopped
-  user_service:
-    container_name: user_service
+    depends_on:
+      user-db:
+        condition: service_healthy
+  user:
+    image: ghcr.io/kianyari/to-dolist-user_service:latest
+    container_name: user
     build:
       context: .
       dockerfile: ./user/Dockerfile
@@ -18,8 +23,9 @@ services:
       - ./user/config/.env
     restart: unless-stopped
 
-  task_service:
-    container_name: task_service
+  task:
+    image: ghcr.io/kianyari/to-dolist-task_service:latest
+    container_name: task
     build:
       context: .
       dockerfile: ./task/Dockerfile
@@ -28,9 +34,15 @@ services:
     env_file:
       - ./task/config/.env
     restart: unless-stopped
+    depends_on:
+      task-db:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
 
-  notification_service:
-    container_name: notification_service
+  notification:
+    image: ghcr.io/kianyari/to-dolist-notification_service:latest
+    container_name: notification
     build:
       context: .
       dockerfile: ./notification/Dockerfile
@@ -39,9 +51,12 @@ services:
     env_file:
       - ./notification/config/.env
     restart: unless-stopped
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
 
-  userDB:
-    container_name: userDB
+  user-db:
+    container_name: user-db
     image: postgres:latest
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
@@ -51,9 +66,14 @@ services:
       - ${USERDB_PORT}:5432
     volumes:
       - ./db_data/user:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
-  taskDB:
-    container_name: taskDB
+  task-db:
+    container_name: task-db
     image: postgres:latest
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
@@ -63,6 +83,11 @@ services:
       - ${TASKDB_PORT}:5432
     volumes:
       - ./db_data/task:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   rabbitmq:
     container_name: rabbitmq
@@ -73,3 +98,8 @@ services:
     ports:
       - ${RABBITMQ_PORT}:5672
       - 15672:15672
+    healthcheck:
+      test: ["CMD-SHELL", "rabbitmq-diagnostics -q ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
